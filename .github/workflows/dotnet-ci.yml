@@ -75,7 +75,7 @@ jobs:
 
           Write-Host "Loading IIS PowerShell module..."
 
-          Import-Module WebAdministration
+          Import-Module "C:\Windows\System32\WindowsPowerShell\v1.0\Modules\WebAdministration\WebAdministration.psd1"
 
           Write-Host "Stopping IIS application pool..."
 
