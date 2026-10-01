@@ -1,4 +1,4 @@
-name: ASP.NET Core CI
+name: ASP.NET Core CI-CD
 
 on:
   push:
@@ -9,6 +9,10 @@ on:
       - main
 
 jobs:
+
+  # =========================
+  # CI - Build and Publish
+  # =========================
   build:
     runs-on: windows-latest
 
@@ -29,3 +33,47 @@ jobs:
 
       - name: Publish application
         run: dotnet publish --configuration Release --no-build --output ./publish
+
+      - name: Upload published application
+        uses: actions/upload-artifact@v4
+        with:
+          name: aspnet-app
+          path: ./publish
+
+
+  # =========================
+  # CD - Deploy to AWS EC2
+  # =========================
+  deploy:
+    needs: build
+
+    # Deploy ONLY when code is pushed to main.
+    # Pull requests will NOT deploy to the EC2 server.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    runs-on: self-hosted
+
+    steps:
+      - name: Download published application
+        uses: actions/download-artifact@v4
+        with:
+          name: aspnet-app
+          path: C:\Deployment\AWS2AspNetApp
+
+      - name: Deploy application to IIS
+        shell: powershell
+        run: |
+          $source = "C:\Deployment\AWS2AspNetApp"
+          $destination = "C:\WebApps\AWS2AspNetApp"
+
+          Write-Host "Starting deployment..."
+
+          if (!(Test-Path $destination)) {
+              New-Item -ItemType Directory -Path $destination -Force
+          }
+
+          Write-Host "Copying application files..."
+
+          Copy-Item "$source\*" $destination -Recurse -Force
+
+          Write-Host "Deployment completed successfully."
