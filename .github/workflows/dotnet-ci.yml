@@ -69,30 +69,28 @@ jobs:
       - name: Deploy application to IIS
         shell: powershell
         run: |
-          $source = "${{ runner.temp }}\AWS2AspNetApp"
+          $source      = "${{ runner.temp }}\AWS2AspNetApp"
           $destination = "C:\WebApps\AWS2AspNetApp"
-          $appPool = "AWS2AspNetApp"
-          $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
-
-          Write-Host "Stopping IIS application pool..."
-
-          & $appcmd stop apppool /apppool.name:"$appPool"
-
-          Start-Sleep -Seconds 5
-
-          Write-Host "Copying application files..."
+          $offline     = Join-Path $destination "app_offline.htm"
 
           if (!(Test-Path $destination)) {
-              New-Item -ItemType Directory -Path $destination -Force
+              New-Item -ItemType Directory -Path $destination -Force | Out-Null
           }
 
-          Copy-Item "$source\*" $destination -Recurse -Force
-
-          Write-Host "Starting IIS application pool..."
-
-          & $appcmd start apppool /apppool.name:"$appPool"
-
-          Write-Host "Deployment completed successfully."
+          try {
+              Set-Content -Path $offline -Value "<html><body><h1>Updating, back shortly...</h1></body></html>"
+              Start-Sleep -Seconds 5
+              Copy-Item "$source\*" $destination -Recurse -Force
+          }
+          finally {
+              Remove-Item $offline -Force -ErrorAction SilentlyContinue
+          }
 
           Get-Item "$destination\AWS2AspNetApp.dll" |
             Select-Object Name, Length, LastWriteTime
+
+      - name: Smoke test
+        shell: powershell
+        run: |
+          $r = Invoke-WebRequest -Uri "http://localhost" -UseBasicParsing
+          Write-Host "Status: $($r.StatusCode)"
