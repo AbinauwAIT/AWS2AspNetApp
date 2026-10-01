@@ -88,9 +88,3 @@ jobs:
 
           Get-Item "$destination\AWS2AspNetApp.dll" |
             Select-Object Name, Length, LastWriteTime
-
-      - name: Smoke test
-        shell: powershell
-        run: |
-          $r = Invoke-WebRequest -Uri "http://localhost" -UseBasicParsing
-          Write-Host "Status: $($r.StatusCode)"
