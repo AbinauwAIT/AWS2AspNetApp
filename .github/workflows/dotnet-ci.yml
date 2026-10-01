@@ -1,19 +1,4 @@
-      - name: Deploy application to IIS
-        shell: powershell
-        run: |
-          $source = "${{ runner.temp }}\AWS2AspNetApp"
-          $destination = "C:\WebApps\AWS2AspNetApp"
-          $appPool = "AWS2AspNetApp"
-
-          Write-Host "Loading IIS PowerShell module..."
-
-          Import-Module WebAdministration
-
-          Write-Host "Stopping IIS application pool..."
-
-          Stop-WebAppPool -Name $appPool
-
-      name: ASP.NET Core CI-CD
+name: ASP.NET Core CI-CD
 
 on:
   push:
@@ -114,4 +99,3 @@ jobs:
 
           Get-Item "$destination\AWS2AspNetApp.dll" |
             Select-Object Name, Length, LastWriteTime
-    Start-Sleep -Seconds 5
