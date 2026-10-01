@@ -72,14 +72,11 @@ jobs:
           $source = "${{ runner.temp }}\AWS2AspNetApp"
           $destination = "C:\WebApps\AWS2AspNetApp"
           $appPool = "AWS2AspNetApp"
-
-          Write-Host "Loading IIS PowerShell module..."
-
-          Import-Module "C:\Windows\System32\WindowsPowerShell\v1.0\Modules\WebAdministration\WebAdministration.psd1"
+          $appcmd = "$env:windir\System32\inetsrv\appcmd.exe"
 
           Write-Host "Stopping IIS application pool..."
 
-          Stop-WebAppPool -Name $appPool
+          & $appcmd stop apppool /apppool.name:"$appPool"
 
           Start-Sleep -Seconds 5
 
@@ -93,7 +90,7 @@ jobs:
 
           Write-Host "Starting IIS application pool..."
 
-          Start-WebAppPool -Name $appPool
+          & $appcmd start apppool /apppool.name:"$appPool"
 
           Write-Host "Deployment completed successfully."
 
