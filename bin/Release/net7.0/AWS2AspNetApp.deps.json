@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "AWS2AspNetApp/1.0.0": {
+        "runtime": {
+          "AWS2AspNetApp.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AWS2AspNetApp/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

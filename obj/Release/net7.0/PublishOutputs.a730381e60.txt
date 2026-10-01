@@ -1,0 +1,7 @@
+C:\ASPNetProjects\AWS2AspNetApp\bin\Release\net7.0\publish\AWS2AspNetApp.exe
+C:\ASPNetProjects\AWS2AspNetApp\bin\Release\net7.0\publish\appsettings.Development.json
+C:\ASPNetProjects\AWS2AspNetApp\bin\Release\net7.0\publish\appsettings.json
+C:\ASPNetProjects\AWS2AspNetApp\bin\Release\net7.0\publish\AWS2AspNetApp.dll
+C:\ASPNetProjects\AWS2AspNetApp\bin\Release\net7.0\publish\AWS2AspNetApp.deps.json
+C:\ASPNetProjects\AWS2AspNetApp\bin\Release\net7.0\publish\AWS2AspNetApp.runtimeconfig.json
+C:\ASPNetProjects\AWS2AspNetApp\bin\Release\net7.0\publish\AWS2AspNetApp.pdb
