@@ -1,86 +1,27 @@
-name: ASP.NET Core CI-CD
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-jobs:
-
-  build:
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET 7
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '7.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build application
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Publish application
-        run: dotnet publish --configuration Release --no-build --output ./publish
-
-      - name: Upload published application
-        uses: actions/upload-artifact@v4
-        with:
-          name: aspnet-app
-          path: ./publish
-
-  deploy:
-    needs: build
-
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    runs-on: self-hosted
-
-    steps:
-      - name: Download published application
-        uses: actions/download-artifact@v4
-        with:
-          name: aspnet-app
-          path: ${{ runner.temp }}\AWS2AspNetApp
-
-      - name: Verify downloaded application
-        shell: powershell
-        run: |
-          $source = "${{ runner.temp }}\AWS2AspNetApp"
-
-          Write-Host "Downloaded application files:"
-          Get-ChildItem $source -Recurse
-
-          if (!(Test-Path "$source\AWS2AspNetApp.dll")) {
-              Write-Error "AWS2AspNetApp.dll was not found."
-              exit 1
-          }
-
-          Write-Host "Application artifact verified successfully."
-
       - name: Deploy application to IIS
         shell: powershell
         run: |
           $source = "${{ runner.temp }}\AWS2AspNetApp"
           $destination = "C:\WebApps\AWS2AspNetApp"
+          $appPool = "AWS2AspNetApp"
 
-          Write-Host "Starting deployment..."
-          Write-Host "Source: $source"
-          Write-Host "Destination: $destination"
+          Write-Host "Stopping IIS application pool..."
+
+          Stop-WebAppPool -Name $appPool
+
+          Start-Sleep -Seconds 5
+
+          Write-Host "Copying application files..."
 
           if (!(Test-Path $destination)) {
               New-Item -ItemType Directory -Path $destination -Force
           }
 
           Copy-Item "$source\*" $destination -Recurse -Force
+
+          Write-Host "Starting IIS application pool..."
+
+          Start-WebAppPool -Name $appPool
 
           Write-Host "Deployment completed successfully."
 
